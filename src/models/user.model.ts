@@ -141,7 +141,7 @@ userSchema.methods.comparePassword = async function (
   candidatePassword: string
 ): Promise<boolean> {
   const user = this as IUserModel;
-  return bcrypt.compare(candidatePassword, user.password).catch((e) => false);
+  return bcrypt.compare(candidatePassword, user.password).catch(() => false);
 };
 
 // M O D E L

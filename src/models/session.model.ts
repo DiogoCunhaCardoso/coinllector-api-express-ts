@@ -21,11 +21,11 @@ export interface ISessionModel extends Document {
  *       properties:
  *         _id:
  *           type: string
- *           example: 60c72b2f9b1e8d2f6c8f8e7f
+ *           example: 66dd5dd3d331876b91e76810
  *         user:
  *           type: string
  *           description: ID of the user associated with the session.
- *           example: 60c72b2f9b1e8d2f6c8f8e5f
+ *           example: 66dd5dd3d331876b91e76810
  *         valid:
  *           type: boolean
  *           description: Indicates if the session is valid.
@@ -37,11 +37,9 @@ export interface ISessionModel extends Document {
  *         createdAt:
  *           type: string
  *           format: date-time
- *           example: 2024-09-06T19:53:55.486Z
  *         updatedAt:
  *           type: string
  *           format: date-time
- *           example: 2024-09-07T07:51:31.262Z
  */
 
 // S C H E M A

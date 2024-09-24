@@ -2,7 +2,7 @@ import { Router } from "express";
 import validate from "../middleware/validateResource.middleware";
 import { requireUser } from "../middleware/requireUser.middleware";
 import { requirePermission } from "../middleware/requirePermission";
-import upload from "../middleware/multer";
+import uploadImage from "../middleware/multer";
 import { PERMISSIONS } from "../constants/permissions";
 import {
   createCountrySchema,
@@ -20,6 +20,8 @@ import {
 
 const router = Router();
 
+// prefix - /api/countries
+
 // CREATE ---------------------------------------------------------------
 
 /**
@@ -30,14 +32,45 @@ const router = Router();
  *       - Country
  *     summary: Creates a country
  *     security:
- *       - BearerAuth: []
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - flagImage
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: The name of the country.
+ *                 example: Portugal
+ *               flagImage:
+ *                 type: string
+ *                 format: binary
+ *                 description: The flag image of the country (JPEG, JPG, PNG).
+ *     responses:
+ *       201:
+ *         description: Country created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *              $ref: '#/components/schemas/Country'
+ *       400:
+ *         description: Bad request (validation errors)
+ *       409:
+ *         description: Conflict (country name is already in use)
+ *       500:
+ *         description: Internal server error
  */
 
 router.post(
   "/",
   /* requireUser, */
   /* requirePermission(PERMISSIONS["countries:write"]), */
-  upload.single("flagImage"),
+  uploadImage.single("flagImage"),
   validate(createCountrySchema),
   createCountryHandler
 );
@@ -119,7 +152,7 @@ router.patch(
 
  *     description: Retrieve a list of all countries
  *     responses:
- *       '200':
+ *        200:
  *         description: A list of countries
  *         content:
  *           application/json:
@@ -127,6 +160,8 @@ router.patch(
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Country'
+ *        500:
+ *         description: Internal server error
  */
 router.get("/", getCountriesHandler);
 
@@ -139,6 +174,24 @@ router.get("/", getCountriesHandler);
  *     tags:
  *       - Country
  *     summary: Gets a country by name
+ *     parameters:
+ *       - name: name
+ *         in: path
+ *         required: true
+ *         description: The name of the country to retrieve.
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved the country
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Country'
+ *       404:
+ *         description: Country not found
+ *       500:
+ *         description: Internal server error
  */
 router.get("/:name", validate(getCountrySchema), getCountryByNameHandler);
 
@@ -146,13 +199,27 @@ router.get("/:name", validate(getCountrySchema), getCountryByNameHandler);
 
 /**
  * @openapi
- * /api/countries:
+ * /api/countries/{name}:
  *   delete:
  *     tags:
  *       - Country
  *     summary: Deletes a country by name
  *     security:
  *       - BearerAuth: []
+ *     parameters:
+ *       - name: name
+ *         in: path
+ *         required: true
+ *         description: The name of the country to delete
+ *         schema:
+ *           type: string
+ *     responses:
+ *       '204':
+ *         description: Country successfully deleted
+ *       '401':
+ *         description: Unauthorized
+ *       '403':
+ *         description: Forbidden
  */
 
 router.delete(

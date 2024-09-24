@@ -18,11 +18,17 @@ const options: swaggerJsdoc.Options = {
           scheme: "bearer",
           bearerFormat: "JWT",
         },
+        refreshToken: {
+          type: "apiKey",
+          in: "header",
+          name: "x-refresh",
+          description: "Refresh token to obtain a new access token.",
+        },
       },
     },
   },
 
-  apis: ["./src/models/*.ts", "./src/routes/*.ts", "./src/schema/*.ts"], // TODO - change this after routes refactoring.
+  apis: ["./src/models/*.ts", "./src/routes/*.ts", "./src/schema/*.ts"],
 };
 
 const swaggerSpec = swaggerJsdoc(options);

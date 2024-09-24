@@ -12,8 +12,6 @@ import usersRoutes from "./routes/user.route";
 // REMOVE AFTER (whats below)
 import qs from "qs";
 import config from "config";
-import { AppError } from "./utils/appError";
-import { AppErrorCode } from "./constants/appErrorCode";
 
 const routes = (app: Express) => {
   /**
@@ -38,7 +36,7 @@ const routes = (app: Express) => {
   app.use("/api/users", usersRoutes);
   app.use("/api/sessions", sessionRoutes);
   app.use("/api/countries", countryRoutes);
-  app.use("/api/coins", coinRoutes);
+  app.use("/api", coinRoutes);
 
   // REMOVE AFTER
   function getGoogleAuthUrl() {
@@ -65,8 +63,6 @@ const routes = (app: Express) => {
 
 export default routes;
 
-// TODO check all validate resources missing.
+// TODO
 // if a coin is deleted, every user with that coin id will stop having it.
 // cron -> 2 years innactive & some else
-// create routes * to catch all unhandled routes
-// CREATE SNIPPETS FOR FUTURE PROJECTS.

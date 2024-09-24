@@ -30,6 +30,7 @@ const payloadSchema = object({
     required_error: "Name is required",
   })
     .min(1, "Name cannot be empty")
+    .max(255)
     .transform((name) => name.toLowerCase()),
 
   flagImage: any(), //TODO rn it works but on controller... (create country)

@@ -22,10 +22,8 @@ export interface CreateCoinInput {
   type: CoinTypeEnum;
   image?: String;
   quantity?: Number;
-  period?: {
-    startDate: Date;
-    endDate?: Date;
-  };
+  periodStartDate: Date;
+  periodEndDate?: Date;
   description: String;
   country: ICountryModel["_id"];
 }

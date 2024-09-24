@@ -18,7 +18,7 @@ import { ICountryModel } from "../types/country.types";
  *          flagImage:
  *            type: string
  *            format: uri
- *            example: http://cloudinary/image
+ *            example: https://res.cloudinary.com/abcdefg/country_countryName.png
  *          joinedOn:
  *            type: string
  *            format: date
@@ -47,7 +47,7 @@ const countrySchema = new Schema<ICountryModel>(
       required: true,
     },
     joinedOn: {
-      type: String, // TODO solve this type error when sending in json
+      type: String,
       required: true,
     },
   },

@@ -19,11 +19,9 @@ import { catchAsyncErrors } from "../middleware/asyncErrorWrapper";
 import { appAssert } from "../utils/appAssert";
 import { AppErrorCode } from "../constants/appErrorCode";
 
-//TODO - mime type allowed
-
 export const createUserHandler = catchAsyncErrors(
   async (req: Request<{}, {}, CreateUserInput["body"]>, res: Response) => {
-    const userExists = await userService.findByProp({ email: req.body.email });
+    const userExists = await userService.exists({ email: req.body.email });
 
     appAssert(
       !userExists,

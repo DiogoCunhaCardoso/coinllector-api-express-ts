@@ -7,7 +7,6 @@ export const countryService = {
 
   async create(input: CreateCountryInput) {
     return await CountryModel.create(input);
-    //TODO error custom class - e.g. of error RN MongoServerError: E11000 duplicate key error collection: coinllector.countries index: name_1 dup key: { name: "string" }
   },
 
   // FIND ALL -------------------------------------------------------------
@@ -23,6 +22,12 @@ export const countryService = {
     options: QueryOptions = { lean: true }
   ) {
     return await CountryModel.findOne(query, {}, options);
+  },
+
+  // EXISTS ---------------------------------------------------------------
+
+  async exists(query: FilterQuery<ICountryModel>) {
+    return await CountryModel.exists(query);
   },
 
   // UPDATE ---------------------------------------------------------------

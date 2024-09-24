@@ -45,7 +45,7 @@ export const createUserSessionHandler = catchAsyncErrors(
 
     appAssert(
       user,
-      StatusCodes.FORBIDDEN,
+      StatusCodes.UNAUTHORIZED,
       AppErrorCode.INVALID_CREDENTIALS,
       "Invalid email or password"
     );
@@ -90,7 +90,7 @@ export const createUserSessionHandler = catchAsyncErrors(
     res.cookie("refreshToken", refreshToken, refreshTokenCookieOptions);
 
     // Return both tokens
-    res.send({ accessToken, refreshToken });
+    res.status(StatusCodes.CREATED).send({ accessToken, refreshToken });
   }
 );
 

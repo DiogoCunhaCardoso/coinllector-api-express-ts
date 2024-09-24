@@ -41,17 +41,16 @@ import { object, string, TypeOf } from "zod";
  */
 
 const payloadSchema = object({
-  name: string({ required_error: "Name is required" }),
-  password: string({ required_error: "Passwords is required" }).min(
-    6,
-    "Password to short - should be 6 chars minimum"
-  ),
+  name: string({ required_error: "Name is required" }).max(63),
+  password: string({ required_error: "Passwords is required" })
+    .min(6, "Password to short - should be 6 chars minimum")
+    .max(255),
   passwordConfirmation: string({
     required_error: "PasswordConfirmation is required",
-  }),
-  email: string({ required_error: "Email is required" }).email(
-    "Not a valid email"
-  ),
+  }).max(255),
+  email: string({ required_error: "Email is required" })
+    .email("Not a valid email")
+    .max(255),
 
   // C H E C K _ I F _ P A S S W O R D S _ M A T C H
 }).refine((data) => data.password === data.passwordConfirmation, {

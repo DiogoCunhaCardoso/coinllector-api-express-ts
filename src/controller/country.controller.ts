@@ -16,7 +16,7 @@ import { ACCEPTED_IMAGE_TYPES, MAX_IMAGE_SIZE } from "../constants/imageRules";
 export const createCountryHandler = catchAsyncErrors(
   async (req: Request<{}, {}, CreateCountryInput["body"]>, res: Response) => {
     const { name } = req.body;
-    const existingCountry = await countryService.findByName({ name });
+    const existingCountry = await countryService.exists({ name });
 
     appAssert(
       !existingCountry,

@@ -39,4 +39,3 @@ export const ROLE_PERMISSIONS = {
 
 export type RoleType = keyof typeof ROLE_PERMISSIONS;
 export type PermissionType = (typeof ALL_PERMISSIONS)[number];
-//TODO Compare to other types I made

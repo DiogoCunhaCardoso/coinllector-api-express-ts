@@ -58,6 +58,11 @@ export const userService = {
     return await UserModel.findOne(query, {}, options);
   },
 
+  // EXISTS ----------------------------------------------------------------
+  async exists(query: FilterQuery<IUserModel>) {
+    return await UserModel.exists(query);
+  },
+
   // UPDATE ---------------------------------------------------------------
 
   async findAndUpdate(

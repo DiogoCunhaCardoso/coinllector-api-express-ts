@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { StatusCodes } from "http-status-codes";
 import { AppErrorCode } from "../../constants/appErrorCode";
 
-const countryId = new mongoose.Types.ObjectId().toString();
+export const validCountryId = new mongoose.Types.ObjectId().toString();
 
 export const validCountryName = "portugal";
 
@@ -24,7 +24,7 @@ export const countryNotFoundError = {
 //
 
 export const countryPayload = {
-  _id: countryId,
+  _id: validCountryId,
   name: "andorra",
   date: "2001-01-14",
   flagImage: "http://placehold.co/400",
@@ -40,6 +40,6 @@ export const newCountryPayloadWithoutRequiredFields = {};
 
 export const newCountryPayloadWithInvalidFields = {
   name: "",
-  flagImage: "not-a-valid-url", //TODO use a webp
+  flagImage: "not-a-valid-url",
   joinedOn: "20220102",
 };

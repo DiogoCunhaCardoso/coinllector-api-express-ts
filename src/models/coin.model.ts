@@ -28,40 +28,32 @@ import { ICoinModel, CoinTypeEnum } from "../types/coin.types";
  *         image:
  *           type: string
  *           format: uri
- *           example: http://cloudinary/image
+ *           example: https://res.cloudinary.com/abcdefg/coin_countryName_type_123456.png
  *         quantity:
  *           type: number
  *           description: Quantity of commemorative coins.
  *           example: 25000
- *         period:
- *           type: object
- *           description: The period during which the coin was minted.
- *           required:
- *             - startDate
- *           properties:
- *             startDate:
- *               type: string
- *               format: date
- *               example: 2002-02-02
- *             endDate:
- *               type: string
- *               format: date
- *               example: 2012-02-02
+ *         periodStartDate:
+ *           type: string
+ *           format: date
+ *           example: 2002-02-02
+ *         periodEndDate:
+ *           type: string
+ *           format: date
+ *           example: 2012-02-02
  *         description:
  *           type: string
  *           example: The coin face represent the shield and castles from Portugal.
  *         country:
  *           type: string
  *           description: The ID of the country associated with the coin.
- *           example: 66db5dd3d331876b91e76815
+ *           example: 66dd5dd3d331876b91e76810
  *         createdAt:
  *           type: string
  *           format: date-time
- *           example: 2024-09-06T19:53:55.486Z
  *         updatedAt:
  *           type: string
  *           format: date-time
- *           example: 2024-09-07T07:51:31.262Z
  */
 
 // S C H E M A
@@ -80,14 +72,10 @@ const coinSchema = new Schema<ICoinModel>(
     quantity: {
       type: Number,
     },
-    period: {
-      type: {
-        _id: false,
-        startDate: { type: Date, required: true },
-        endDate: { type: Date },
-      },
-      required: true,
-    },
+
+    periodStartDate: { type: Date, required: true },
+    periodEndDate: { type: Date },
+
     description: {
       type: String,
       required: true,

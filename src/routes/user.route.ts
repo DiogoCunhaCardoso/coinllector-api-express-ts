@@ -2,7 +2,7 @@ import { Router } from "express";
 import validate from "../middleware/validateResource.middleware";
 import { requireUser } from "../middleware/requireUser.middleware";
 import { recoverPasswordRateLimiter } from "../utils/ratelimiter";
-import upload from "../middleware/multer";
+import uploadImage from "../middleware/multer";
 import {
   addCoinToUserSchema,
   createUserSchema,
@@ -23,6 +23,7 @@ import {
   verifyUserEmailHandler,
 } from "../controller";
 
+// prefix - /api/users
 const router = Router();
 
 // CREATE ---------------------------------------------------------------
@@ -62,6 +63,24 @@ router.post("/", validate(createUserSchema), createUserHandler);
  *     tags:
  *       - User
  *     summary: Verifies email with OTP sent via email
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - name: verificationCode
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       '200':
+ *         description: Verification successful
+ *       '400':
+ *         description: Bad request
+ *       '404':
+ *         description: User not found
  */
 
 router.post(
@@ -78,6 +97,17 @@ router.post(
  *     tags:
  *       - User
  *     summary: Sends email with OTP code to reset password
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ForgotPasswordInput'
+ *     responses:
+ *       '200':
+ *         description: Email sent
+ *       '404':
+ *         description: User not found
  */
 
 router.post(
@@ -95,15 +125,37 @@ router.post(
  *     tags:
  *       - User
  *     summary: Resets password with OTP
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - name: passwordResetCode
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ResetPasswordInput'
+ *     responses:
+ *       '200':
+ *         description: Password reset successful
+ *       '400':
+ *         description: Bad request
+ *       '404':
+ *         description: User not found
  */
-
 router.post(
   "/reset-password/:id/:passwordResetCode",
   validate(resetPasswordSchema),
   resetPasswordHandler
 );
 
-//TODO not checked if it is correct
 // ADD/UPDATE PFP -------------------------------------------------------
 /**
  * @openapi
@@ -149,7 +201,7 @@ router.post(
 router.put(
   "/me/pfp",
   requireUser,
-  upload.single("pfp"),
+  uploadImage.single("pfp"),
   uploadProfilePictureHandler
 );
 
@@ -164,7 +216,19 @@ router.put(
  *     summary: Gets logged user
  *     security:
  *       - BearerAuth: []
- *
+ *     responses:
+ *       '200':
+ *         description: Successfully retrieved user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                 email:
+ *                   type: string
+ *                   # Add other user properties
  */
 router.get("/me", requireUser, getCurrentUserHandler);
 
@@ -178,6 +242,11 @@ router.get("/me", requireUser, getCurrentUserHandler);
  *     summary: Soft deletes logged user's account
  *     security:
  *       - BearerAuth: []
+ *     responses:
+ *       '204':
+ *         description: Successfully deleted
+ *       '401':
+ *         description: Unauthorized
  */
 
 router.delete("/me", requireUser, deleteCurrentUserHandler);
@@ -193,6 +262,24 @@ router.delete("/me", requireUser, deleteCurrentUserHandler);
  *     summary: Adds a coin to the logged user's coins collection
  *     security:
  *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/AddCoinToUserInput'
+ *     responses:
+ *       '200':
+ *         description: Coin added successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 coins:
+ *                   type: array
+ *                   items:
+ *                     type: string
  */
 
 router.post(
@@ -212,6 +299,24 @@ router.post(
  *     summary: Removes a coin from the logged user's coins collection
  *     security:
  *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/RemoveCoinFromUserInput'
+ *     responses:
+ *       '200':
+ *         description: Coin removed successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 coins:
+ *                   type: array
+ *                   items:
+ *                     type: string
  */
 
 router.delete(
