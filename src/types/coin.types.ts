@@ -1,8 +1,7 @@
 import { Document } from "mongoose";
+import { ICountryModel } from "./country.types";
 
 /* E N U M S */
-
-import { ICountryModel } from "./country.types";
 
 export enum CoinTypeEnum {
   COMMEMORATIVE = "COMMEMORATIVE",

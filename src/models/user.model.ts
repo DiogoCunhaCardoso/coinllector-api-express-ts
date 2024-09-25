@@ -1,12 +1,9 @@
 import { Schema, model, models } from "mongoose";
 import bcrypt from "bcrypt";
-import config from "config";
+import { config } from "../constants/env";
 import crypto from "crypto";
 import { IUserModel, UserRoleEnum } from "../types/user.types";
-
-const generateVerificationCode = () => {
-  return crypto.randomBytes(16).toString("hex");
-};
+import { omit } from "lodash";
 
 export const privateFields = [
   "emailVerified",
@@ -96,10 +93,6 @@ const userSchema = new Schema<IUserModel>(
       type: Boolean,
       default: false,
     },
-    verificationCode: {
-      type: String,
-      default: generateVerificationCode,
-    },
     passwordResetCode: {
       type: String,
     },
@@ -127,7 +120,7 @@ userSchema.pre("save", async function (next) {
 
   if (!user.isModified("password")) return next();
 
-  const salt = await bcrypt.genSalt(config.get<number>("SALT_WORK_FACTOR"));
+  const salt = await bcrypt.genSalt(config.SALT_WORK_FACTOR);
   const hash = await bcrypt.hash(user.password, salt);
 
   user.password = hash;
@@ -142,6 +135,10 @@ userSchema.methods.comparePassword = async function (
 ): Promise<boolean> {
   const user = this as IUserModel;
   return bcrypt.compare(candidatePassword, user.password).catch(() => false);
+};
+
+userSchema.methods.omitPrivateFields = function (): object {
+  return omit(this.toJSON(), privateFields);
 };
 
 // M O D E L

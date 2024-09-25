@@ -3,7 +3,7 @@ import { deserializeUser } from "../middleware/deserializeUser.middleware";
 import routes from "../routes";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import config from "config";
+import { config } from "../constants/env";
 import helmet from "helmet";
 import { globalRateLimiter } from "./ratelimiter";
 import { errorHandler } from "../middleware/errorHandler";
@@ -16,7 +16,7 @@ export const createServer = () => {
 
   app.use(
     cors({
-      origin: config.get<string>("origin"),
+      origin: config.APP_ORIGIN,
       credentials: true,
     })
   );

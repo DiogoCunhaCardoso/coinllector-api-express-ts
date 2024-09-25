@@ -3,7 +3,7 @@ import UserModel from "../models/user.model";
 import { IUserModel } from "../types/user.types";
 import { omit } from "lodash";
 import qs from "qs";
-import config from "config";
+import { config } from "../constants/env";
 import axios from "axios";
 import logger from "../utils/logger";
 import { AppError } from "../utils/appError";
@@ -33,8 +33,7 @@ interface GoogleUserResult {
 
 export const userService = {
   async create(input: any) {
-    const user = await UserModel.create(input);
-    return omit(user, "password");
+    return await UserModel.create(input);
   },
 
   // FIND ALL -------------------------------------------------------------
@@ -88,25 +87,15 @@ export const userService = {
     email: string;
     password: string;
   }) {
-    try {
-      const user = await UserModel.findOne({ email });
+    const user = await UserModel.findOne({ email });
 
-      if (!user) return false;
+    if (!user) return false;
 
-      const isValid = await user.comparePassword(password);
+    const isValid = await user.comparePassword(password);
 
-      if (!isValid) return false;
-      return omit(user, "password");
-    } catch (e: any) {
-      throw new AppError(
-        StatusCodes.INTERNAL_SERVER_ERROR,
-        AppErrorCode.INTERNAL_SERVER_ERROR,
-        e.message,
-        false
-      );
-    }
+    if (!isValid) return false;
+    return omit(user, "password");
   },
-
   // GOOGLE OAUTH -----------------------------------------------------------
 
   async getGoogleOauthTokens({
@@ -118,9 +107,9 @@ export const userService = {
 
     const values = {
       code,
-      client_id: config.get<string>("googleClientId"),
-      client_secret: config.get<string>("googleClientSecret"),
-      redirect_uri: config.get<string>("googleOauthRedirectUrl"),
+      client_id: config.GOOGLE.CLIENT_ID,
+      client_secret: config.GOOGLE.CLIENT_SECRET,
+      redirect_uri: config.GOOGLE.OAUTH_REDIRECT_URL,
       grantType: "authorization_code",
     };
 

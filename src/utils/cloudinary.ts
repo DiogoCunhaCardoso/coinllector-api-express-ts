@@ -1,14 +1,14 @@
 import { v2 as cloudinary } from "cloudinary";
-import config from "config";
+import { config } from "../constants/env";
 import { AppError } from "./appError";
 import { StatusCodes } from "http-status-codes";
 import { AppErrorCode } from "../constants/appErrorCode";
 import logger from "./logger";
 
 cloudinary.config({
-  cloud_name: config.get<string>("cloudinaryName"),
-  api_key: config.get<string>("cloudinaryApiKey"),
-  api_secret: config.get<string>("cloudinaryApiSecret"),
+  cloud_name: config.CLOUDINARY.NAME,
+  api_key: config.CLOUDINARY.API_KEY,
+  api_secret: config.CLOUDINARY.API_SECRET,
 });
 
 export const uploadImage = async (imageUrl: string, publicId?: string) => {

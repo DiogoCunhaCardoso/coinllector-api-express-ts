@@ -1,8 +1,9 @@
-import { Express, Request, Response } from "express";
+import { Express, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import countryRoutes from "./routes/country.route";
 import coinRoutes from "./routes/coin.route";
 import sessionRoutes from "./routes/session.route";
+import authRoutes from "./routes/auth.route";
 import usersRoutes from "./routes/user.route";
 //
 //
@@ -11,7 +12,7 @@ import usersRoutes from "./routes/user.route";
 //
 // REMOVE AFTER (whats below)
 import qs from "qs";
-import config from "config";
+import { config } from "./constants/env";
 
 const routes = (app: Express) => {
   /**
@@ -33,6 +34,7 @@ const routes = (app: Express) => {
 
   app.get("/healthcheck", (_, res: Response) => res.sendStatus(StatusCodes.OK));
 
+  app.use("/api/auth", authRoutes);
   app.use("/api/users", usersRoutes);
   app.use("/api/sessions", sessionRoutes);
   app.use("/api/countries", countryRoutes);
@@ -42,8 +44,8 @@ const routes = (app: Express) => {
   function getGoogleAuthUrl() {
     const googleAuthUrl = "https://accounts.google.com/o/oauth2/v2/auth";
     const options = {
-      client_id: config.get<string>("googleClientId"),
-      redirect_uri: config.get<string>("googleOauthRedirectUrl"),
+      client_id: config.GOOGLE.CLIENT_ID,
+      redirect_uri: config.GOOGLE.OAUTH_REDIRECT_URL,
       response_type: "code",
       scope:
         "https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email",

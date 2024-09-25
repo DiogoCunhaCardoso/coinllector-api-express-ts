@@ -2,31 +2,25 @@ import { CookieOptions, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { userService } from "../service/user.service";
 import { sessionService } from "../service/session.service";
-import { signJwt } from "../utils/jwt.utils";
-import config from "config";
+import { signToken } from "../utils/jwt.utils";
 import logger from "../utils/logger";
-import { CreateSessionInput } from "../schema/session.schema";
 import { privateFields } from "../models/user.model";
 import { omit } from "lodash";
 import { ROLE_PERMISSIONS, RoleType } from "../constants/permissions";
 import { catchAsyncErrors } from "../middleware/asyncErrorWrapper";
 import { appAssert } from "../utils/appAssert";
 import { AppErrorCode } from "../constants/appErrorCode";
-
-const DOMAIN = config.get<string>("domain");
-const ACCESS_TOKEN_TTL = config.get<string>("accessTokenTtl");
-const REFRESH_TOKEN_TTL = config.get<string>("refreshTokenTtl");
-const ORIGIN = config.get<string>("origin");
+import { config } from "../constants/env";
 
 // -----------------------------------------------------------
 
 const accessTokenCookieOptions: CookieOptions = {
   maxAge: 900000, // 15 min
   httpOnly: true,
-  domain: DOMAIN,
+  domain: config.DOMAIN,
   path: "/",
   sameSite: "lax",
-  secure: false, // TODO create is production flag
+  secure: false,
 };
 
 const refreshTokenCookieOptions: CookieOptions = {
@@ -35,64 +29,6 @@ const refreshTokenCookieOptions: CookieOptions = {
 };
 
 // -----------------------------------------------------------
-
-// L O G I N _ & _ S E S S I O N
-
-export const createUserSessionHandler = catchAsyncErrors(
-  async (req: Request<{}, {}, CreateSessionInput["body"]>, res: Response) => {
-    // Validate user's password
-    const user = await userService.validatePassword(req.body);
-
-    appAssert(
-      user,
-      StatusCodes.UNAUTHORIZED,
-      AppErrorCode.INVALID_CREDENTIALS,
-      "Invalid email or password"
-    );
-
-    appAssert(
-      user.emailVerified,
-      StatusCodes.FORBIDDEN,
-      AppErrorCode.EMAIL_NOT_VERIFIED,
-      "Please verify your email"
-    );
-
-    appAssert(
-      user.role,
-      StatusCodes.FORBIDDEN,
-      AppErrorCode.FORBIDDEN,
-      "No role found"
-    );
-
-    // Create a session
-    const userAgent = req.get("user-agent") || "";
-    const session = await sessionService.create(user._id, userAgent);
-
-    // Create an access token
-    const userRole: RoleType = user.role;
-    const scopes = ROLE_PERMISSIONS[userRole] || "";
-
-    const userSafePayload = omit(user.toJSON(), privateFields);
-
-    const accessToken = signJwt(
-      { ...userSafePayload, scopes, session: session._id },
-      { expiresIn: ACCESS_TOKEN_TTL } // 15min
-    );
-
-    // Create a refresh token
-    const refreshToken = signJwt(
-      { ...userSafePayload, scopes, session: session._id },
-      { expiresIn: REFRESH_TOKEN_TTL } // 1y
-    );
-
-    // Set Cookies
-    res.cookie("accessToken", accessToken, accessTokenCookieOptions);
-    res.cookie("refreshToken", refreshToken, refreshTokenCookieOptions);
-
-    // Return both tokens
-    res.status(StatusCodes.CREATED).send({ accessToken, refreshToken });
-  }
-);
 
 // CREATE WITH GOOGLE ----------------------------------------------------
 
@@ -151,15 +87,15 @@ export const googleOauthSessionHandler = async (
 
     const userSafePayload = omit(user.toJSON(), privateFields);
 
-    const accessToken = signJwt(
+    const accessToken = signToken(
       { ...userSafePayload, scopes, session: session._id },
-      { expiresIn: ACCESS_TOKEN_TTL } // 15min
+      { expiresIn: config.ACCESS_TOKEN_TTL } // 15min
     );
 
     // Create a refresh token
-    const refreshToken = signJwt(
+    const refreshToken = signToken(
       { ...userSafePayload, scopes, session: session._id },
-      { expiresIn: REFRESH_TOKEN_TTL } // 1y
+      { expiresIn: config.REFRESH_TOKEN_TTL } // 1y
     );
 
     // set cookies
@@ -167,10 +103,10 @@ export const googleOauthSessionHandler = async (
     res.cookie("refreshToken", refreshToken, refreshTokenCookieOptions);
 
     // redirect back to client
-    return res.redirect(ORIGIN);
+    return res.redirect(config.APP_ORIGIN);
   } catch (e) {
     logger.error(e, "Failed to authorize Google user");
-    return res.redirect(`${ORIGIN}/oauth/error`);
+    return res.redirect(`${config.APP_ORIGIN}/oauth/error`);
   }
 };
 

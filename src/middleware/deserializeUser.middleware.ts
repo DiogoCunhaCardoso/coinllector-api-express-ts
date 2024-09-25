@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import { get } from "lodash";
-import { verifyJwt } from "../utils/jwt.utils";
+import { verifyToken } from "../utils/jwt.utils";
 import { sessionService } from "../service/session.service";
-import config from "config";
+import { config } from "../constants/env";
 
 /**
  *  Decodes a JWT from the request headers & attaches the user info to res.locals.user
@@ -23,7 +23,7 @@ export const deserializeUser = async (
 
   if (!accessToken) return next();
 
-  const { decoded, expired } = verifyJwt(accessToken);
+  const { decoded, expired } = verifyToken(accessToken);
 
   if (decoded) {
     res.locals.user = decoded;
@@ -55,13 +55,13 @@ export const deserializeUser = async (
       res.cookie("accessToken", accessToken, {
         maxAge: 900000, // 15 min
         httpOnly: true,
-        domain: config.get<string>("domain"),
+        domain: config.DOMAIN,
         path: "/",
         sameSite: "strict",
         secure: false, // false == http. true == only https.
       });
 
-      const { decoded } = verifyJwt(newAccessToken);
+      const { decoded } = verifyToken(newAccessToken);
 
       res.locals.user = decoded;
     }

@@ -1,11 +1,10 @@
 import { FilterQuery, UpdateQuery } from "mongoose";
 import SessionModel, { ISessionModel } from "../models/session.model";
-import { signJwt, verifyJwt } from "../utils/jwt.utils";
+import { signToken, verifyToken } from "../utils/jwt.utils";
 import { get, omit } from "lodash";
 import { userService } from "./user.service";
-import config from "config";
+import { config } from "../constants/env";
 import { privateFields } from "../models/user.model";
-import { StatusCodes } from "http-status-codes";
 import { ROLE_PERMISSIONS, RoleType } from "../constants/permissions";
 
 export const sessionService = {
@@ -35,7 +34,7 @@ export const sessionService = {
   // REISSUE TOKEN------------------------------------------------------------
 
   async reIssueAccessToken({ refreshToken }: { refreshToken: string }) {
-    const { decoded } = verifyJwt(refreshToken);
+    const { decoded } = verifyToken(refreshToken);
 
     if (!decoded || !get(decoded, "session")) return false;
 
@@ -55,9 +54,9 @@ export const sessionService = {
 
     const userSafePayload = omit(user.toJSON(), privateFields);
 
-    const accessToken = signJwt(
+    const accessToken = signToken(
       { ...userSafePayload, scopes, session: session._id },
-      { expiresIn: config.get<string>("accessTokenTtl") } // 15min
+      { expiresIn: config.ACCESS_TOKEN_TTL } // 15min
     );
 
     return accessToken;

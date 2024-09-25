@@ -1,34 +1,40 @@
 import nodemailer, { SendMailOptions } from "nodemailer";
-import config from "config";
+import { config } from "../constants/env";
 import logger from "./logger";
-// const crateTestCreds = async () => {
-//   const creds = await nodemailer.createTestAccount();
-//   console.log({ creds });
-// };
 
-// crateTestCreds();
-
-const smtp = config.get<{
-  user: string;
-  pass: string;
-  host: string;
-  port: number;
-  secure: boolean;
-}>("smtp");
+const smtp = {
+  user: config.SMTP.USER,
+  pass: config.SMTP.PASSWORD,
+  host: config.SMTP.HOST,
+  port: config.SMTP.PORT,
+  secure: config.SMTP.SECURE,
+};
 
 const transporter = nodemailer.createTransport({
   ...smtp,
   auth: { user: smtp.user, pass: smtp.pass },
 });
 
+//
+
+const getFromEmail = () =>
+  config.NODE_ENV === "development" ? "test@example.com" : config.EMAIL_SENDER;
+
 const sendEmail = async (payload: SendMailOptions) => {
-  transporter.sendMail(payload, (e, info) => {
+  const emailPayload = {
+    ...payload,
+    from: getFromEmail(),
+  };
+
+  transporter.sendMail(emailPayload, (e, info) => {
     if (e) {
       logger.error(e, "Error sending email");
       return;
     }
 
-    logger.info(`Preview URL: ${nodemailer.getTestMessageUrl(info)}`);
+    if (config.NODE_ENV === "development") {
+      logger.info(`Preview URL: ${nodemailer.getTestMessageUrl(info)}`);
+    }
   });
 };
 

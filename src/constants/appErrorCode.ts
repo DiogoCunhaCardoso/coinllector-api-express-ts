@@ -30,6 +30,6 @@ export enum AppErrorCode {
   COUNTRY_NOT_FOUND = "COUNTRY_NOT_FOUND",
   COUNTRY_NAME_IN_USE = "COUNTRY_NAME_IN_USE",
 
-  //USER Errors
+  //Coin Errors
   COIN_NOT_FOUND = "COIN_NOT_FOUND",
 }

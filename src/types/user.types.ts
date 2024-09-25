@@ -26,6 +26,7 @@ export interface IUserModel extends CreateUserInput, Document {
   createdAt: Date;
   updatedAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
+  omitPrivateFields(): Partial<IUserModel>;
 }
 
 // change in future to multiple inputs

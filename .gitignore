@@ -1,6 +1,7 @@
 /node_modules
-.env
-.env.prod //TODO check this after
+.env.development
+.env.production
+.env.test
 dist
 
 # Logs

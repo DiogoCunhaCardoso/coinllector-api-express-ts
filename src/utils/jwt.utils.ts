@@ -1,14 +1,11 @@
 import jwt from "jsonwebtoken";
-import config from "config";
+import { config } from "../constants/env";
 
-const privateKey = config.get<string>("privateKey");
-const publicKey = config.get<string>("publicKey");
-
-export const signJwt = (
+export const signToken = (
   payload: Object,
   options?: jwt.SignOptions | undefined
 ) => {
-  const newToken = jwt.sign(payload, privateKey, {
+  const newToken = jwt.sign(payload, config.PRIVATE_KEY, {
     ...(options && options),
     algorithm: "RS256",
   });
@@ -16,11 +13,11 @@ export const signJwt = (
   return newToken;
 };
 
-export const verifyJwt = (token: string) => {
+export const verifyToken = (token: string) => {
   try {
     const decoded = jwt.verify(
       token,
-      publicKey /* , { algorithms: ["RS256"] } */
+      config.PUBLIC_KEY /* , { algorithms: ["RS256"] } */
     );
 
     return {

@@ -5,7 +5,8 @@
   "license": "MIT",
   "scripts": {
     "dev": "tsnd --respawn --transpile-only src/app.ts",
-    "test": "jest"
+    "prod": "NODE_ENV=production tsnd --respawn --transpile-only src/app.ts",
+    "test": "NODE_ENV=test jest"
   },
   "dependencies": {
     "axios": "^1.7.7",

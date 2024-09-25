@@ -35,7 +35,7 @@ Typescript REST API using node.js express and some other cool stuff.
 
 ![image](https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white)
 
-Bcrypt, Config, Cookie-parser, Dayjs, Dotenv, CORS, Helmet, Multer, http-status-codes, JWT, lodash, mime, mongoose, nodemailer, pino, slugify...
+Bcrypt, Cookie-parser, Dayjs, Dotenv, CORS, Helmet, Multer, http-status-codes, JWT, lodash, mime, mongoose, nodemailer, pino, slugify...
 
 ## Install
 
@@ -52,7 +52,7 @@ To run the project you wil need to add the following env variables
 
 Mongodb URI
 
-`DB_URI`
+`MONGO_URI`
 
 Google Auth
 

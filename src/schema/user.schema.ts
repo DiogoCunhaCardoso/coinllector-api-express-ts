@@ -78,12 +78,11 @@ export const removeCoinFromUserSchema = object({
 
 export const verifyUserEmailSchema = object({
   params: object({
-    id: string(),
-    verificationCode: string(),
+    code: string(),
   }),
 });
 
-export const forgotPasswordSchema = object({
+export const sendResetPasswordEmailSchema = object({
   body: object({
     email: string({ required_error: "Email is required" }).email(
       "Not a valid email"
@@ -92,11 +91,8 @@ export const forgotPasswordSchema = object({
 });
 
 export const resetPasswordSchema = object({
-  params: object({
-    id: string(),
-    passwordResetCode: string(),
-  }),
   body: object({
+    verificationCode: string(),
     password: string({ required_error: "Passwords is required" }).min(
       6,
       "Password to short - should be 6 chars minimum"
@@ -116,5 +112,7 @@ export type AddCoinToUserInput = TypeOf<typeof addCoinToUserSchema>;
 export type RemoveCoinFromUserInput = TypeOf<typeof removeCoinFromUserSchema>;
 
 export type VerifyUserEmailInput = TypeOf<typeof verifyUserEmailSchema>;
-export type ForgotPasswordInput = TypeOf<typeof forgotPasswordSchema>;
+export type SendResetPasswordEmailInput = TypeOf<
+  typeof sendResetPasswordEmailSchema
+>;
 export type ResetPasswordInput = TypeOf<typeof resetPasswordSchema>;

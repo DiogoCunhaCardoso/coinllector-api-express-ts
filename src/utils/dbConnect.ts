@@ -1,12 +1,10 @@
 import mongoose from "mongoose";
-import config from "config";
 import logger from "./logger";
+import { config } from "../constants/env";
 
 const connectDB = async () => {
-  const DB_URI = config.get<string>("DB_URI");
-
   try {
-    await mongoose.connect(DB_URI);
+    await mongoose.connect(config.MONGO_URI);
     logger.info("Connected to DB");
   } catch (e: any) {
     logger.error(`Could not connect to DB: ${e.message}`);

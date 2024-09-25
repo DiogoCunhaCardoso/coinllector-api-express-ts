@@ -9,8 +9,8 @@ const payloadSchema = object({
   }),
 });
 
-export const createSessionSchema = object({
+export const loginSchema = object({
   body: payloadSchema,
 });
 
-export type CreateSessionInput = TypeOf<typeof createSessionSchema>;
+export type LoginInput = TypeOf<typeof loginSchema>;

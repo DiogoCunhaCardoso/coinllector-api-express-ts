@@ -1,22 +1,16 @@
-import "dotenv/config";
-import config from "config";
 import connectDB from "./utils/dbConnect";
 import logger from "./utils/logger";
 import { swaggerDocs } from "./utils/swagger";
-
 import { createServer } from "./utils/server";
-
-const PORT = config.get<number>("PORT");
-
-const NODE_ENV = "development"; // TODO change this
+import { config } from "./constants/env";
 
 const app = createServer();
 
-swaggerDocs(app, PORT);
+swaggerDocs(app, config.PORT);
 
-app.listen(PORT, () => {
-  logger.info(`App running: http://localhost:${PORT}/healthcheck`);
-  logger.info(`Running on ${NODE_ENV} environment `);
+app.listen(config.PORT, () => {
+  logger.info(`App running: http://localhost:${config.PORT}/healthcheck`);
+  logger.info(`Running on ${config.NODE_ENV} environment `);
 
   connectDB();
 });

@@ -1,59 +1,18 @@
 import { Router } from "express";
 import validate from "../middleware/validateResource.middleware";
 import { requireUser } from "../middleware/requireUser.middleware";
-import { recoverPasswordRateLimiter } from "../utils/ratelimiter";
 import uploadImage from "../middleware/multer";
-import {
-  addCoinToUserSchema,
-  createUserSchema,
-  forgotPasswordSchema,
-  removeCoinFromUserSchema,
-  resetPasswordSchema,
-  verifyUserEmailSchema,
-} from "../schema";
+import { addCoinToUserSchema, removeCoinFromUserSchema } from "../schema";
 import {
   addCoinToUserHandler,
-  createUserHandler,
   deleteCurrentUserHandler,
-  forgotPasswordHandler,
-  getCurrentUserHandler,
+  getLoggedUserHandler,
   removeCoinFromUserHandler,
-  resetPasswordHandler,
   uploadProfilePictureHandler,
-  verifyUserEmailHandler,
 } from "../controller";
 
 // prefix - /api/users
 const router = Router();
-
-// CREATE ---------------------------------------------------------------
-/**
- * @openapi
- * '/api/users':
- *  post:
- *     tags:
- *     - User
- *     summary: Registers a user
- *     requestBody:
- *      required: true
- *      content:
- *        application/json:
- *           schema:
- *              $ref: '#/components/schemas/CreateUserInput'
- *     responses:
- *      201:
- *        description: Created
- *        content:
- *          application/json:
- *            schema:
- *              $ref: '#/components/schemas/CreateUserResponse'
- *      409:
- *        description: Conflict
- *      400:
- *        description: Bad request
- */
-
-router.post("/", validate(createUserSchema), createUserHandler);
 
 // VERIFY EMAIL ---------------------------------------------------------
 /**
@@ -82,79 +41,6 @@ router.post("/", validate(createUserSchema), createUserHandler);
  *       '404':
  *         description: User not found
  */
-
-router.post(
-  "/verify/:id/:verificationCode",
-  validate(verifyUserEmailSchema),
-  verifyUserEmailHandler
-);
-
-// FORGOT PASSWORD EMAIL ------------------------------------------------
-/**
- * @openapi
- * /api/users/forgot-password:
- *   post:
- *     tags:
- *       - User
- *     summary: Sends email with OTP code to reset password
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/ForgotPasswordInput'
- *     responses:
- *       '200':
- *         description: Email sent
- *       '404':
- *         description: User not found
- */
-
-router.post(
-  "/forgot-password",
-  recoverPasswordRateLimiter,
-  validate(forgotPasswordSchema),
-  forgotPasswordHandler
-);
-
-// RESET PASSWORD -------------------------------------------------------
-/**
- * @openapi
- * /api/users/reset-password/{id}/{passwordResetCode}:
- *   post:
- *     tags:
- *       - User
- *     summary: Resets password with OTP
- *     parameters:
- *       - name: id
- *         in: path
- *         required: true
- *         schema:
- *           type: string
- *       - name: passwordResetCode
- *         in: path
- *         required: true
- *         schema:
- *           type: string
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/ResetPasswordInput'
- *     responses:
- *       '200':
- *         description: Password reset successful
- *       '400':
- *         description: Bad request
- *       '404':
- *         description: User not found
- */
-router.post(
-  "/reset-password/:id/:passwordResetCode",
-  validate(resetPasswordSchema),
-  resetPasswordHandler
-);
 
 // ADD/UPDATE PFP -------------------------------------------------------
 /**
@@ -230,7 +116,7 @@ router.put(
  *                   type: string
  *                   # Add other user properties
  */
-router.get("/me", requireUser, getCurrentUserHandler);
+router.get("/me", requireUser, getLoggedUserHandler);
 
 // DELETE LOGGED USER (ME) ----------------------------------------------
 /**
